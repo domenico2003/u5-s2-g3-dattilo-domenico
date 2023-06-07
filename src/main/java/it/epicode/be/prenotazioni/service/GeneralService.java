@@ -21,7 +21,8 @@ import it.epicode.be.prenotazioni.repository.UserRepository;
 public class GeneralService {
 	@Autowired
 	PostazioneRepository pr;
-
+	@Autowired
+	PrenotazioniService ps;
 	@Autowired
 	CittaRepository cr;
 	@Autowired
@@ -90,4 +91,33 @@ public class GeneralService {
 		}
 
 	}
+
+	public Prenotazione aggiornaPrenotazione(long idPrenotazione, long idUtente, long Idpostazione,
+			LocalDate dataPrenotata) throws Exception {
+
+		User user = this.getUserById(idUtente);
+		Postazione pos = this.getPostazioneById(Idpostazione);
+		Prenotazione pr = ps.getprenotazioneById(idPrenotazione);
+		pr.setUser(user);
+		pr.setPostazione(pos);
+		pr.setDataPrenotata(dataPrenotata);
+		boolean validato = false;
+		long diffDays = ChronoUnit.DAYS.between(dataPrenotata, LocalDate.now());
+		System.out.println(diffDays);
+		if (!(diffDays >= -2)) {
+			if (this.getPrenotazioneByUserAndDataPrenotata(user, dataPrenotata).isEmpty()) {
+				if (this.getPrenotazioneLibera(dataPrenotata, pos).isEmpty()) {
+					validato = true;
+				}
+			}
+		}
+
+		if (validato) {
+			return prenRep.save(pr);
+		} else {
+			throw new Exception("prenotazione non aggiornata");
+		}
+
+	}
+
 }

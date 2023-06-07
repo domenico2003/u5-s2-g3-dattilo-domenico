@@ -15,8 +15,13 @@ public class PrenotazioniService {
 	PrenotazioneRepository prenRep;
 
 	public Prenotazione getprenotazioneById(long id) throws Exception {
-
 		return prenRep.findById(id).orElseThrow(() -> new Exception("utente non trovato"));
+	}
+
+	public void deleteprenotazioneById(long id) throws Exception {
+
+		prenRep.delete(this.getprenotazioneById(id));
+
 	}
 
 	public Page<Prenotazione> getprenotazioni(int pagina) throws Exception {
